@@ -1,4 +1,4 @@
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, orderBy, query, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebase.config"
 
 export const getUserDetail =()=>{
@@ -33,3 +33,20 @@ export const getUserDetail =()=>{
         });
     });
 };
+
+export const getTemplates = ()=>{
+    return new Promise((resolve,reject)=>{
+        const tempQuery = query(
+            collection(db, "Templates"),
+            orderBy("timestamp","asc")
+            );
+
+        const unsubscribe = onSnapshot(tempQuery, (snapshot)=>{
+            const templates = snapshot.docs.map((doc) => {
+                return doc.data();
+            });
+            resolve(templates);
+        })
+        return unsubscribe;
+    })
+}
